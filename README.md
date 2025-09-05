@@ -1,6 +1,6 @@
-# 🛡️ DDoS Detection System
+# 🛡️ DDoS Detection and Mitigation System
 
-A real-time DDoS attack detection and mitigation system built with Python, machine learning, and modern web technologies.
+A real-time DDoS attack detection and mitigation system using machine learning and deep learning techniques. It monitors network traffic, classifies suspicious activities, and automatically reroutes or blocks malicious traffic to ensure uninterrupted service availability.
 
 ## 🚀 Features
 
@@ -22,8 +22,8 @@ A real-time DDoS attack detection and mitigation system built with Python, machi
 
 ### 1. Clone and Setup
 ```bash
-git clone <repository-url>
-cd ddos-detection
+git clone https://github.com/AdityaBisht07/DDoS-Detection-and-Mitigation-System.git
+cd DDoS-Detection-and-Mitigation-System
 ```
 
 ### 2. Install Dependencies
@@ -150,12 +150,13 @@ The system supports various mitigation strategies:
 
 ### Project Structure
 ```
-ddos-detection/
+DDoS-Detection-and-Mitigation-System/
 ├── ddos_detector.py      # Core detection engine
 ├── web_dashboard.py      # Web interface and API
 ├── ml_trainer.py         # ML model training
 ├── run_system.py         # System launcher
 ├── requirements.txt      # Python dependencies
+├── models/               # Trained ML models
 └── README.md            # This file
 ```
 
