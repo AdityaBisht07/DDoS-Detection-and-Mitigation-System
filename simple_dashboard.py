@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-DDoS Detection Web Dashboard
-===========================
+Simple DDoS Detection Dashboard
+==============================
 
-Real-time web dashboard for monitoring DDoS attacks and network statistics.
-Provides REST API and WebSocket updates for real-time monitoring.
+A simplified web dashboard that works with the simple detector.
+No admin privileges required.
 
 Author: DDoS Detection System
 """
@@ -12,44 +12,25 @@ Author: DDoS Detection System
 import asyncio
 import json
 import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from datetime import datetime
+from typing import Dict, List
 import logging
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from pydantic import BaseModel
 
-# Import our detector
-try:
-    from ddos_detector import DDoSDetector, NetworkStats, AttackAlert
-except ImportError:
-    # Fallback if ddos_detector is not available
-    class DDoSDetector:
-        def __init__(self):
-            self.packet_capture = None
-        def start_detection(self):
-            pass
-        def get_current_stats(self):
-            return {}
-        def get_recent_alerts(self, limit=10):
-            return []
-    
-    class NetworkStats:
-        pass
-    
-    class AttackAlert:
-        pass
+# Import simple detector
+from simple_detector import SimpleDDoSDetector
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # FastAPI app
-app = FastAPI(title="DDoS Detection Dashboard", version="1.0.0")
+app = FastAPI(title="Simple DDoS Detection Dashboard", version="1.0.0")
 
 # CORS middleware
 app.add_middleware(
@@ -61,22 +42,17 @@ app.add_middleware(
 )
 
 # Global detector instance
-detector = DDoSDetector()
+detector = SimpleDDoSDetector()
 connected_clients = set()
 
 # Pydantic models
 class DetectionConfig(BaseModel):
-    syn_flood_threshold: int = 1000
-    udp_flood_threshold: int = 2000
-    http_flood_threshold: int = 500
-    syn_ratio_threshold: float = 0.1
-    udp_ratio_threshold: float = 0.8
-    http_ratio_threshold: float = 0.9
-
-class MitigationAction(BaseModel):
-    action: str  # "block_ip", "rate_limit", "redirect"
-    target: str  # IP address or range
-    duration: int = 300  # seconds
+    syn_flood_threshold: int = 100
+    udp_flood_threshold: int = 200
+    http_flood_threshold: int = 50
+    syn_ratio_threshold: float = 0.8
+    udp_ratio_threshold: float = 0.9
+    http_ratio_threshold: float = 0.7
 
 # WebSocket connection manager
 class ConnectionManager:
@@ -162,28 +138,6 @@ async def update_config(config: DetectionConfig):
         logger.error(f"Error updating config: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/api/mitigate")
-async def apply_mitigation(action: MitigationAction):
-    """Apply mitigation action."""
-    try:
-        # Here you would implement actual mitigation logic
-        # For now, just log the action
-        logger.info(f"Mitigation action: {action.action} on {action.target} for {action.duration}s")
-        
-        # In a real system, you would:
-        # - Block IPs using firewall rules
-        # - Apply rate limiting
-        # - Redirect traffic to honeypots
-        # - Update router configurations
-        
-        return JSONResponse(content={
-            "status": "success", 
-            "message": f"Mitigation applied: {action.action} on {action.target}"
-        })
-    except Exception as e:
-        logger.error(f"Error applying mitigation: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """WebSocket endpoint for real-time updates."""
@@ -191,7 +145,7 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             # Send periodic updates
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
             
             # Get current stats
             stats = detector.get_current_stats()
@@ -220,7 +174,7 @@ def get_dashboard_html() -> str:
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>DDoS Detection Dashboard</title>
+        <title>Simple DDoS Detection Dashboard</title>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -281,8 +235,8 @@ def get_dashboard_html() -> str:
     <body>
         <div class="container">
             <div class="header">
-                <h1>🛡️ DDoS Detection Dashboard</h1>
-                <p>Real-time network monitoring and attack detection</p>
+                <h1>🛡️ Simple DDoS Detection Dashboard</h1>
+                <p>Real-time network monitoring and attack detection (Simulation Mode)</p>
                 <div class="status running" id="status">RUNNING</div>
             </div>
             
@@ -381,7 +335,7 @@ def get_dashboard_html() -> str:
             
             // Connect to WebSocket
             function connectWebSocket() {
-                ws = new WebSocket('ws://localhost:8000/ws');
+                ws = new WebSocket('ws://localhost:8001/ws');
                 
                 ws.onopen = function() {
                     console.log('WebSocket connected');
@@ -487,7 +441,7 @@ def get_dashboard_html() -> str:
 async def start_detection_system():
     """Start the detection system in background."""
     detector.start_detection()
-    logger.info("DDoS detection system started")
+    logger.info("Simple DDoS detection system started")
 
 @app.on_event("startup")
 async def startup_event():
@@ -497,22 +451,22 @@ async def startup_event():
 @app.on_event("shutdown")
 async def shutdown_event():
     """Shutdown event handler."""
-    detector.packet_capture.stop_capture()
-    logger.info("DDoS detection system stopped")
+    detector.stop_detection()
+    logger.info("Simple DDoS detection system stopped")
 
 def main():
-    """Main function to run the web dashboard."""
-    print("🚀 Starting DDoS Detection Web Dashboard")
+    """Main function to run the simple web dashboard."""
+    print("🚀 Starting Simple DDoS Detection Dashboard")
     print("=" * 50)
-    print("📊 Dashboard: http://localhost:8000")
-    print("📡 API: http://localhost:8000/api/stats")
-    print("🔌 WebSocket: ws://localhost:8000/ws")
+    print("📊 Dashboard: http://localhost:8001")
+    print("📡 API: http://localhost:8001/api/stats")
+    print("🔌 WebSocket: ws://localhost:8001/ws")
     print("🛑 Press Ctrl+C to stop")
     
     uvicorn.run(
-        "web_dashboard:app",
+        "simple_dashboard:app",
         host="0.0.0.0",
-        port=8000,
+        port=8001,
         reload=True,
         log_level="info"
     )
