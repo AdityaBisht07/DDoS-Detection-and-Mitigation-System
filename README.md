@@ -20,17 +20,27 @@ A real-time DDoS attack detection and mitigation system using machine learning a
 
 ## 🛠️ Quick Start
 
-### Option 1: Simple Version (Recommended - No Admin Required)
+### Option 1: Standalone Version (Recommended - No Admin Required)
 ```bash
 # Clone the repository
 git clone https://github.com/AdityaBisht07/DDoS-Detection-and-Mitigation-System.git
 cd DDoS-Detection-and-Mitigation-System
 
-# Run the fixed system (works without admin privileges)
+# Run the standalone system (all-in-one, no admin privileges)
+python final_launcher.py
+```
+
+### Option 2: Simple Version (No Admin Required)
+```bash
+# Clone the repository
+git clone https://github.com/AdityaBisht07/DDoS-Detection-and-Mitigation-System.git
+cd DDoS-Detection-and-Mitigation-System
+
+# Run the simple system
 python run_fixed_system.py
 ```
 
-### Option 2: Full Version (Requires Admin Privileges)
+### Option 3: Full Version (Requires Admin Privileges)
 ```bash
 # Clone the repository
 git clone https://github.com/AdityaBisht07/DDoS-Detection-and-Mitigation-System.git
@@ -44,6 +54,7 @@ python run_system.py
 ```
 
 ### Access Dashboard
+- **Standalone Version**: http://localhost:8002 (Recommended)
 - **Simple Version**: http://localhost:8001
 - **Full Version**: http://localhost:8000
 
