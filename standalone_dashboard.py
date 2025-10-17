@@ -603,12 +603,12 @@ def get_dashboard_html() -> str:
 
 def main():
     """Main function to run the standalone dashboard."""
-    print("🚀 Starting Standalone DDoS Detection Dashboard")
+    print("Starting Standalone DDoS Detection Dashboard")
     print("=" * 50)
-    print("📊 Dashboard: http://localhost:8002")
-    print("📡 API: http://localhost:8002/api/stats")
-    print("🔌 WebSocket: ws://localhost:8002/ws")
-    print("🛑 Press Ctrl+C to stop")
+    print("Dashboard: http://localhost:8002")
+    print("API: http://localhost:8002/api/stats")
+    print("WebSocket: ws://localhost:8002/ws")
+    print("Press Ctrl+C to stop")
     
     uvicorn.run(
         "standalone_dashboard:app",

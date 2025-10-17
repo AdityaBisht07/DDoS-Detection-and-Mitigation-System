@@ -104,7 +104,7 @@ class FinalDDoSSystem:
     
     def start_system(self):
         """Start the complete system."""
-        logger.info("🚀 Starting Final DDoS Detection System")
+        logger.info("Starting Final DDoS Detection System")
         logger.info("=" * 50)
         
         # Check dependencies
@@ -122,11 +122,11 @@ class FinalDDoSSystem:
         # Open browser
         self.open_browser()
         
-        logger.info("✅ System is running successfully!")
-        logger.info(f"📊 Dashboard: http://localhost:{self.port}")
-        logger.info(f"📡 API: http://localhost:{self.port}/api/stats")
-        logger.info(f"🔌 WebSocket: ws://localhost:{self.port}/ws")
-        logger.info("🛑 Press Ctrl+C to stop")
+        logger.info("System is running successfully!")
+        logger.info(f"Dashboard: http://localhost:{self.port}")
+        logger.info(f"API: http://localhost:{self.port}/api/stats")
+        logger.info(f"WebSocket: ws://localhost:{self.port}/ws")
+        logger.info("Press Ctrl+C to stop")
         
         return True
     
@@ -188,7 +188,7 @@ def main():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     
-    print("🛡️ Final DDoS Detection System")
+    print("Final DDoS Detection System")
     print("=" * 40)
     print("This is the ultimate version that includes everything in one process.")
     print("No admin privileges required - perfect for testing and demonstration.")
