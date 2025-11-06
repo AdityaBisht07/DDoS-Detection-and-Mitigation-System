@@ -1,0 +1,63 @@
+Simple DDoS Detection System - Current Capabilities
+===================================================
+
+Overview
+- This project provides a simplified, adaptive DDoS detection system that runs without admin privileges using simulated traffic. It offers real-time detection signals, alerting/cooldown, and configurable thresholds via CLI.
+
+Key Features
+- Adaptive anomaly detection using EWMA and z-scores for overall packet rate
+- Per-destination flood detection (targeted attack detection) with per-dst EWMA/z-scores
+- Protocol/behavior ratios: SYN ratio (TCP), UDP ratio, HTTP/HTTPS ratio
+- Entropy-based signals: source IP entropy, destination port entropy
+- Sliding window metrics: packet rate, unique source/destination counts
+- Alerting with deduplication and cooldown (prevents alert spam)
+- Command-line configuration for thresholds and behavior
+- Built-in simulated traffic generator for demonstration
+
+Detection Logic (high level)
+- Global anomaly: An alert can trigger when the current packet rate is statistically anomalous (z-score >= threshold) and combined with indicative ratios:
+  - SYN Flood: high z-score + high SYN ratio
+  - UDP Flood: high z-score + high UDP ratio
+  - HTTP Flood: high z-score + high HTTP/HTTPS ratio
+- Distributed pattern: high z-score + high source IP entropy (many hosts involved)
+- Targeted flood: for each destination IP, if per-dst packet rate is anomalous (per-dst z-score >= threshold) and above a minimum pps, raise a targeted flood alert
+
+Runtime Metrics Tracked
+- packet_count, packet_rate (pps)
+- unique_sources, unique_destinations
+- syn_ratio, udp_ratio, http_ratio
+- src_entropy_bits, dst_port_entropy_bits
+
+Alerting Behavior
+- Alerts include timestamp, attack_type, severity, description, packet_count, packet_rate, unique_sources, ratios, entropy, optional details (e.g., dst_ip), and a confidence score
+- Per-alert-type cooldown prevents repeated alerts for the same condition within the configured cooldown window
+
+Configuration (CLI flags)
+- --window <int>: sliding window seconds (default: 60)
+- --check-interval <int>: detection evaluation interval seconds (default: 5)
+- --simulate / --no-simulate: enable/disable traffic simulation (simulate defaults to on unless --no-simulate is provided)
+- --cooldown <int>: alert cooldown seconds (default: 60)
+- --rate-z <float>: global packet rate z-score threshold (default: 4.0)
+- --per-dst-z <float>: per-destination z-score threshold (default: 4.0)
+- --per-dst-min <float>: per-destination minimum pps to consider (default: 25.0)
+- --syn-ratio <float>: SYN flood ratio threshold (default: 0.8)
+- --udp-ratio <float>: UDP flood ratio threshold (default: 0.9)
+- --http-ratio <float>: HTTP/HTTPS flood ratio threshold (default: 0.7)
+- --min-src-entropy <float>: minimum source entropy bits for distributed alarm (default: 6.0)
+
+How to Run (simulation)
+- Example:
+  python simple_detector.py --simulate --window 60 --check-interval 5 --rate-z 4 --per-dst-z 4 --per-dst-min 25 --syn-ratio 0.8 --udp-ratio 0.9 --http-ratio 0.7 --cooldown 60
+
+Outputs
+- Periodic console stats showing current packet rate, unique sources, ratios, and entropy
+- Alerts printed to console (and kept in memory) with type, severity, and description
+
+Known Limitations
+- Uses simulated traffic; live packet capture/ingest is not wired in this demo
+- Heuristics and thresholds are intentionally simple for clarity; tuning may be needed for production traffic
+- No persistent storage or external alerting integrations (e.g., email/Slack/SIEM) in this version
+
+Extensibility Notes
+- A live data source can be integrated by feeding real packets into the detector's packet_history and calling _update_stats() accordingly
+- Additional features like flow-based features, rate limiting actions, or export to files/DB can be added around the detection loop and alert handler
